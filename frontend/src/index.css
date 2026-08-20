@@ -1,0 +1,79 @@
+:root {
+  --bg: #FFFFFF;
+  --bg-alt: #FAFAFA;
+  --ink: #0A0A0C;
+  --ink-2: #6B6B75;
+  --ink-3: #A0A0AA;
+  --border: #ECECEF;
+  --blue-1: #1E4FD6;
+  --blue-2: #4C8DF5;
+  --gradient: linear-gradient(135deg, var(--blue-1), var(--blue-2));
+  --verified-bg: #EAF1FE;
+  --verified-ink: #1E4FD6;
+  --radius: 18px;
+  --font-head: 'Poppins', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg-alt);
+  color: var(--ink-2);
+  font-family: var(--font-body);
+  font-weight: 300;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-head);
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 40px; background: var(--bg); border-bottom: 1px solid var(--border);
+}
+.logo { font-family: var(--font-head); font-weight: 700; font-size: 18px; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+.logo .mark { width: 22px; height: 22px; border-radius: 7px; background: var(--gradient); }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-body); font-size: 12px; font-weight: 500;
+  padding: 5px 11px; border-radius: 999px; white-space: nowrap;
+}
+.badge.verified { background: var(--verified-bg); color: var(--verified-ink); }
+.badge.neutral { background: var(--bg-alt); color: var(--ink-2); border: 1px solid var(--border); }
+.badge svg { width: 12px; height: 12px; }
+
+.state-msg { padding: 60px 24px; text-align: center; color: var(--ink-3); font-size: 14px; }
+
+.topbar-left { display: flex; align-items: center; gap: 32px; }
+.topnav { display: flex; gap: 22px; }
+.topnav a {
+  font-size: 13.5px; color: var(--ink-2); padding: 4px 0; border-bottom: 2px solid transparent;
+}
+.topnav a:hover { color: var(--ink); }
+.topnav a.active { color: var(--ink); border-bottom-color: var(--blue-2); font-weight: 500; }
+
+.wallet-btn {
+  padding: 9px 18px; border-radius: 999px; border: 1.5px solid var(--border);
+  background: var(--bg-alt); color: var(--ink-3); font-family: var(--font-head);
+  font-weight: 500; font-size: 13px; cursor: not-allowed;
+}
+.wallet-btn.connected { background: var(--bg-alt); color: var(--ink); border: 1.5px solid var(--border); cursor: pointer; }
+
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+.live-price { font-size: 12px; color: var(--ink-3); display: flex; align-items: center; gap: 6px; }
+.live-price-tag {
+  font-size: 9.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--blue-1);
+  background: var(--verified-bg); padding: 2px 6px; border-radius: 999px;
+}
+
+html, body { overflow-x: hidden; max-width: 100vw; }
+
+.logo { font-family: 'Inter Tight', sans-serif; font-weight: 500; letter-spacing: -0.025em; }
+.logo .mark { width: 26px; height: 26px; border-radius: 8px; object-fit: cover; display: block; background: none; }

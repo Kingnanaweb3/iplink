@@ -1,0 +1,92 @@
+.audience {
+  background: linear-gradient(180deg, #F1F2F9 0%, #F5F5FB 100%);
+  padding: clamp(72px, 9vw, 132px) clamp(32px, 7vw, 96px);
+}
+
+.audience-head { max-width: 1160px; margin: 0 auto clamp(36px, 4vw, 52px); text-align: center; }
+
+.audience-head h2 {
+  font-family: 'Inter Tight', -apple-system, sans-serif;
+  font-weight: 500;
+  font-size: clamp(28px, 3.6vw, 46px);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: #08080B;
+  margin: 0 0 26px;
+}
+.audience-muted { color: #96959F; }
+
+.audience-toggle {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #E8E8ED;
+}
+
+.audience-tab {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  padding: 9px 22px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: #6E6D79;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.audience-tab:hover { color: #08080B; }
+.audience-tab.is-active { background: #08080B; color: #FFFFFF; font-weight: 500; }
+
+.audience-panel {
+  max-width: 1160px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid #E8E8ED;
+  border-radius: 20px;
+  padding: clamp(28px, 4vw, 48px);
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: clamp(28px, 5vw, 64px);
+  align-items: start;
+}
+
+.audience-copy h3 {
+  font-family: 'Inter Tight', -apple-system, sans-serif;
+  font-weight: 500;
+  font-size: clamp(22px, 2.4vw, 30px);
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+  color: #08080B;
+  margin: 0 0 14px;
+}
+
+.audience-copy p {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.72;
+  color: #5A5A66;
+  margin: 0;
+}
+
+.audience-points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+
+.audience-points li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #3F3E4A;
+}
+
+.audience-check { color: #08080B; flex-shrink: 0; margin-top: 1px; }
+
+@media (max-width: 900px) {
+  .audience-panel { grid-template-columns: 1fr; gap: 28px; }
+}

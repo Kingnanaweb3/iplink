@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-aaa67211160d0f63a62817be597e3cc37776026a",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.13.0"
+  },
+  "userSourceNameMap": {
+    "contracts/RoyaltyPayer.sol": "project/contracts/RoyaltyPayer.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/RoyaltyPayer.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.28;\n\n// Sepolia-side stand-in for \"the distributor/DSP paying Mira's royalties.\"\n// Each call here is a real, verifiable Sepolia transaction that Attestcoin\n// later proves actually happened, before Creditcoin releases a payout.\ncontract RoyaltyPayer {\n    event RoyaltyPaid(address indexed payer, address indexed creator, uint256 amount, string period);\n\n    function payRoyalty(address payable creator, string calldata period) external payable {\n        require(msg.value > 0, \"zero payment\");\n        (bool ok, ) = creator.call{value: msg.value}(\"\");\n        require(ok, \"forward failed\");\n        emit RoyaltyPaid(msg.sender, creator, msg.value, period);\n    }\n}\n"
+      }
+    }
+  }
+}

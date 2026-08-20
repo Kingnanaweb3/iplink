@@ -1,0 +1,16 @@
+.list-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px; padding: 40px;
+}
+.list-card {
+  background: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px; display: block; transition: border-color 0.15s ease;
+}
+.list-card:hover { border-color: var(--blue-2); }
+.list-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.asset-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--gradient); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.list-card h3 { font-size: 15px; margin-bottom: 14px; }
+.list-progress-track { height: 6px; background: var(--bg-alt); border-radius: 999px; overflow: hidden; margin-bottom: 8px; }
+.list-progress-fill { height: 100%; background: var(--gradient); border-radius: 999px; }
+.list-progress-row { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-2); }
+.list-tagline { font-size: 12.5px; color: var(--ink-2); margin: -8px 0 14px; }

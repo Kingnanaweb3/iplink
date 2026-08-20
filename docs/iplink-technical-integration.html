@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPLink — Attestcoin Protocol Integration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Manrope:wght@400;500;600&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFFEFB;
+    --sidebar-bg: #FBEADD;
+    --sidebar-border: #F0D8BC;
+    --panel: #FFFFFF;
+    --ink: #101014;
+    --ink-2: #55535E;
+    --ink-3: #8A8895;
+    --border: #E9E3D8;
+    --accent-1: #8B6FF2;
+    --accent-2: #F0A8DA;
+    --gradient: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    --verified: #1E9E63;
+    --verified-bg: #E7F5EC;
+    --warn: #B96A1F;
+    --warn-bg: #FBF0E2;
+    --code-bg: #171522;
+    --code-ink: #E7E3F5;
+    --radius: 12px;
+    --font-head: 'DM Sans', sans-serif;
+    --font-body: 'Manrope', sans-serif;
+    --font-mono: 'Roboto Mono', monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink-2);
+    font-family: var(--font-body);
+    font-size: 15.5px;
+    line-height: 1.7;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-head);
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  code, .mono, .addr { font-family: var(--font-mono); }
+  a { color: var(--accent-1); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible { outline: 2px solid var(--accent-1); outline-offset: 2px; }
+
+  .layout { display: grid; grid-template-columns: 272px 1fr; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar {
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
+    padding: 40px 28px;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  }
+  .sidebar-eyebrow {
+    font-family: var(--font-mono); font-size: 11.5px; text-transform: uppercase;
+    letter-spacing: .07em; color: var(--ink-3); margin-bottom: 8px;
+  }
+  .sidebar-title {
+    font-family: var(--font-head); font-weight: 700; font-size: 18px; color: var(--ink);
+    line-height: 1.3; margin-bottom: 32px;
+  }
+  .sidebar nav { display: flex; flex-direction: column; }
+  .sidebar nav a {
+    color: var(--ink-2); font-size: 14px; padding: 9px 0; border-left: 2px solid transparent;
+    padding-left: 12px; margin-left: -14px;
+  }
+  .sidebar nav a:hover { color: var(--ink); text-decoration: none; border-left-color: var(--accent-2); }
+  .sidebar-foot { margin-top: 40px; font-size: 12.5px; color: var(--ink-3); }
+
+  /* Content */
+  .content { padding: 56px 64px 100px; }
+  .content-inner { max-width: 700px; }
+
+  .doc-title { font-size: 34px; margin: 0 0 12px; }
+  .doc-sub { color: var(--ink-2); font-size: 16px; margin: 0 0 44px; max-width: 620px; }
+
+  section { padding: 40px 0; border-top: 1px solid var(--border); }
+  section:first-of-type { border-top: none; padding-top: 0; }
+  section h2 { font-size: 23px; margin: 0 0 14px; }
+  section h3 { font-size: 16.5px; margin: 22px 0 8px; }
+  section h4 { font-size: 15px; margin: 0 0 6px; }
+  section p { margin: 0 0 14px; }
+  section ul { padding-left: 20px; margin: 0 0 14px; }
+  section li { margin-bottom: 6px; }
+
+  .why-item { padding: 16px 0; border-bottom: 1px solid var(--border); }
+  .why-item:last-child { border-bottom: none; }
+  .why-tag {
+    font-family: var(--font-mono); font-size: 11px; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--ink-3);
+  }
+  .why-tag.used { color: var(--accent-1); }
+  .why-item h3 { margin: 6px 0 6px; }
+  .why-item p { margin: 0; font-size: 14.5px; }
+
+  /* Code panel */
+  .code-panel { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); margin: 20px 0; }
+  .code-tabs { display: flex; background: var(--sidebar-bg); border-bottom: 1px solid var(--border); }
+  .code-tab {
+    padding: 10px 16px; font-size: 12.5px; font-family: var(--font-mono); color: var(--ink-3);
+    cursor: pointer; border-bottom: 2px solid transparent;
+  }
+  .code-tab.active { color: var(--ink); border-bottom-color: var(--accent-1); background: var(--code-bg); }
+  .code-body { background: var(--code-bg); color: var(--code-ink); padding: 20px 22px; overflow-x: auto; display: none; }
+  .code-body.active { display: block; }
+  .code-body pre { margin: 0; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.7; white-space: pre; }
+  .code-body .c1 { color: #7A7690; }
+  .code-body .kw { color: #A48CFF; }
+  .code-body .str { color: #F0A8DA; }
+  .code-body .fn { color: #7FD9C4; }
+
+  .vchip {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 500;
+    background: var(--verified-bg); color: var(--verified); padding: 2px 8px; border-radius: 999px;
+    margin-left: 8px; white-space: nowrap; font-family: var(--font-body);
+  }
+  .vchip svg { width: 10px; height: 10px; }
+
+  .step { padding: 18px 0; border-bottom: 1px solid var(--border); }
+  .step:last-child { border-bottom: none; }
+  .step-label { font-family: var(--font-mono); font-size: 12px; color: var(--accent-1); margin-bottom: 4px; }
+  .kv {
+    background: var(--sidebar-bg); border: 1px solid var(--sidebar-border); border-radius: 8px;
+    padding: 10px 14px; font-size: 12px; display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px;
+  }
+  .kv .item { display: flex; gap: 6px; align-items: baseline; }
+  .kv .k { color: var(--ink-3); }
+  .kv .v { color: var(--ink); word-break: break-all; }
+
+  .table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 8px 0 20px; }
+  .table th {
+    text-align: left; font-family: var(--font-head); font-weight: 600;
+    font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-3);
+    padding: 8px 12px; border-bottom: 1px solid var(--border);
+  }
+  .table td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .table tr:last-child td { border-bottom: none; }
+  .netbadge { font-size: 10.5px; padding: 2px 7px; border-radius: 999px; background: var(--sidebar-bg); color: var(--ink-2); }
+
+  .limit-card {
+    background: var(--warn-bg); border: 1px solid color-mix(in srgb, var(--warn) 30%, var(--border));
+    border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px;
+  }
+  .limit-card h4 { margin: 0 0 5px; color: var(--warn); }
+  .limit-card p { margin: 0; font-size: 14px; }
+
+  footer { padding-top: 32px; border-top: 1px solid var(--border); color: var(--ink-3); font-size: 12.5px; }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; }
+    .content { padding: 40px 24px 80px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-eyebrow">IPLink Docs</div>
+    <div class="sidebar-title">Attestcoin Protocol<br>Integration</div>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#architecture">Why Attestcoin</a>
+      <a href="#integration">Integration code</a>
+      <a href="#proof">Live proof walkthrough</a>
+      <a href="#contracts">Deployed contracts</a>
+      <a href="#limitations">Design notes</a>
+    </nav>
+    <div class="sidebar-foot">BUIDL CTC 2026 Fall submission</div>
+  </aside>
+
+  <main class="content">
+    <div class="content-inner">
+
+      <h1 class="doc-title">Attestcoin Protocol Integration</h1>
+      <p class="doc-sub">IPLink lets creators raise capital against real, future royalty income. This document explains — with real transaction hashes, not diagrams alone — exactly how Attestcoin Protocol verification drives that financing, trustlessly.</p>
+
+      <section id="overview">
+        <h2>Overview</h2>
+        <p>Our <code>Campaign</code> contract's verification entry point, <code>execute()</code>, has no access control — anyone can call it. That's intentional. Trust doesn't come from who submits a proof, it comes from the proof itself being checked on-chain by Creditcoin's Block Prover precompile before a single line of business logic runs.</p>
+        <ul>
+          <li>No centralized oracle operator decides what's true</li>
+          <li>Verification and business logic execute synchronously, in one transaction</li>
+          <li>Replay protection prevents the same proof being submitted twice</li>
+          <li>Only events from our registered RoyaltyPayer source contract are accepted</li>
+        </ul>
+      </section>
+
+      <section id="architecture">
+        <h2>Why Attestcoin, not a bridge or an oracle</h2>
+        <p>IPLink needs to know, with certainty, that a real royalty payment happened on a source chain — before releasing capital or paying an investor. Three approaches were possible; only one avoids reintroducing a trusted middleman.</p>
+
+        <div class="why-item">
+          <span class="why-tag">Rejected</span>
+          <h3>A token bridge</h3>
+          <p>Bridges move assets, not facts. We don't need to move a token across chains — we need to prove an event happened where it happened. Using a bridge here would be the wrong tool solving an adjacent problem.</p>
+        </div>
+        <div class="why-item">
+          <span class="why-tag">Rejected</span>
+          <h3>A centralized oracle</h3>
+          <p>An oracle operator reporting "yes, this payment happened" is exactly the single point of trust and failure the hackathon's own Attestcoin brief is designed to eliminate. It would undercut the entire pitch.</p>
+        </div>
+        <div class="why-item">
+          <span class="why-tag used">Used</span>
+          <h3>Attestcoin Protocol</h3>
+          <p>Proves transaction <em>inclusion</em> on the source chain using Merkle and continuity proofs, verified natively on Creditcoin in about one block. No operator, no async wait, no intermediate state.</p>
+        </div>
+      </section>
+
+      <section id="integration">
+        <h2>The real code</h2>
+        <p><code>Campaign.sol</code> inherits <code>USCBase</code>, Creditcoin's own reference pattern for Attestcoin Smart Contracts. When <code>execute()</code> is called with a proof, verification and business logic run in the same transaction.</p>
+
+        <div class="code-panel">
+          <div class="code-tabs">
+            <div class="code-tab active" data-tab="t1">Campaign.sol</div>
+            <div class="code-tab" data-tab="t2">USCBase.execute()</div>
+            <div class="code-tab" data-tab="t3">Real proof response</div>
+          </div>
+          <div class="code-body active" id="t1">
+<pre><span class="c1">// Called only after the precompile has verified the proof and</span>
+<span class="c1">// replay protection has passed. No trusted attestor role exists.</span>
+<span class="kw">function</span> <span class="fn">_processAndEmitEvent</span>(<span class="kw">uint8</span>, <span class="kw">bytes32</span>, <span class="kw">bytes</span> <span class="kw">memory</span> encodedTransaction) <span class="kw">internal override</span> {
+    <span class="kw">uint8</span> txType = EvmV1Decoder.<span class="fn">getTransactionType</span>(encodedTransaction);
+    <span class="kw">require</span>(EvmV1Decoder.<span class="fn">isValidTransactionType</span>(txType), <span class="str">"Unsupported transaction type"</span>);
+
+    <span class="kw">receipt</span> = EvmV1Decoder.<span class="fn">decodeReceiptFields</span>(encodedTransaction);
+    <span class="kw">require</span>(receipt.receiptStatus == <span class="kw">1</span>, <span class="str">"Source transaction did not succeed"</span>);
+
+    logs = EvmV1Decoder.<span class="fn">getLogsByEventSignature</span>(receipt, ROYALTY_PAID_EVENT_SIGNATURE);
+    <span class="kw">require</span>(logs.length > <span class="kw">0</span>, <span class="str">"No RoyaltyPaid event found"</span>);
+    <span class="kw">require</span>(logs[<span class="kw">0</span>].address_ == royaltyPayer, <span class="str">"Event not from registered RoyaltyPayer"</span>);
+
+    _recordVerifiedRevenue(amount);
+}</pre>
+          </div>
+          <div class="code-body" id="t2">
+<pre><span class="kw">function</span> <span class="fn">execute</span>(...) <span class="kw">external returns</span> (<span class="kw">bool</span> success) {
+    <span class="kw">bytes32</span> queryId = _computeQueryId(chainKey, blockHeight, merkleRoot, siblings);
+    <span class="kw">require</span>(!processedQueries[queryId], <span class="str">"Query already processed"</span>);
+
+    <span class="kw">bool</span> verified = _verifyProof(
+        chainKey, blockHeight, encodedTransaction,
+        merkleRoot, siblings, lowerEndpointDigest, continuityRoots
+    );
+    <span class="kw">require</span>(verified, <span class="str">"Proof of inclusion verification failed"</span>);
+
+    processedQueries[queryId] = <span class="kw">true</span>;
+    _processAndEmitEvent(action, queryId, encodedTransaction);
+    <span class="kw">return true</span>;
+}</pre>
+          </div>
+          <div class="code-body" id="t3">
+<pre>{
+  <span class="str">"success"</span>: <span class="kw">true</span>,
+  <span class="str">"data"</span>: {
+    <span class="str">"chainKey"</span>: <span class="kw">1</span>,
+    <span class="str">"headerNumber"</span>: <span class="kw">11524672</span>,
+    <span class="str">"txHash"</span>: <span class="str">"0x3c08c62c...d4044"</span>,
+    <span class="str">"continuityProof"</span>: { <span class="c1">"lowerEndpointDigest": "0x4b7a...", "roots": [ ... ]</span> },
+    <span class="str">"merkleProof"</span>: { <span class="c1">"root": "0xcc09...", "siblings": [ ... ]</span> },
+    <span class="str">"cached"</span>: <span class="kw">true</span>
+  }
+}</pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="proof">
+        <h2>What actually happened, step by step</h2>
+        <p>Every value below is a real transaction from this project's own testing session, not illustrative placeholder data.</p>
+
+        <div class="step">
+          <div class="step-label">Step 1</div>
+          <h4>Royalty payment triggered on Sepolia<span class="vchip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>confirmed</span></h4>
+          <p>A real transaction on <code>RoyaltyPayer</code>, standing in for a distributor paying a creator's royalties.</p>
+          <div class="kv">
+            <div class="item"><span class="k">tx</span><span class="v mono">0x3c08c62c032c064e51c4db1e3cec0de76b7f198305a18ae3caa86f8a6d8d4044</span></div>
+            <div class="item"><span class="k">chain</span><span class="v">Ethereum Sepolia</span></div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-label">Step 2</div>
+          <h4>Inclusion proof generated</h4>
+          <p>Creditcoin's proof builder service returned a real Merkle + continuity proof once the block was attested — no mocked JSON.</p>
+          <div class="kv">
+            <div class="item"><span class="k">chainKey</span><span class="v">1 (confirmed on-chain via ChainInfo precompile)</span></div>
+            <div class="item"><span class="k">headerNumber</span><span class="v">11524672</span></div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-label">Step 3</div>
+          <h4>Verified on Creditcoin, trustlessly<span class="vchip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>on-chain</span></h4>
+          <p><code>Campaign.execute()</code> called directly by the Creator wallet — no attestor, no relayer permission required. The Block Prover precompile at <code>0x0FD2</code> verified the proof synchronously.</p>
+          <div class="kv">
+            <div class="item"><span class="k">tx</span><span class="v mono">0x0fc20bba6470cea7bd6c3e7e38943c68d0b4e4acc279c27de15a03f2cf55cfc6</span></div>
+            <div class="item"><span class="k">chain</span><span class="v">Creditcoin CC3 Testnet</span></div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-label">Step 4</div>
+          <h4>Revenue recorded, payout claimed</h4>
+          <p>25% revenue share applied automatically. Investor claimed a real payout, deposited in real CTC.</p>
+          <div class="kv">
+            <div class="item"><span class="k">verified revenue</span><span class="v">0.001 (source-chain units)</span></div>
+            <div class="item"><span class="k">investor share</span><span class="v">0.00025 CTC — claimed</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contracts">
+        <h2>Live addresses</h2>
+        <p>All contracts below are deployed and verifiable on public testnet explorers.</p>
+        <table class="table">
+          <thead><tr><th>Contract</th><th>Network</th><th>Address</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>RoyaltyPayer</td>
+              <td><span class="netbadge">Sepolia</span></td>
+              <td class="mono">0x764C566eED1EFb674Fd42f2d1dfa7FF29FCba6b3</td>
+            </tr>
+            <tr>
+              <td>CampaignFactory <span style="color:var(--ink-3);">(trustless, current)</span></td>
+              <td><span class="netbadge">Creditcoin CC3 Testnet</span></td>
+              <td class="mono">0xF9923DF74FFA56cdcceAd8D4c2d16B32C61AB632</td>
+            </tr>
+            <tr>
+              <td>Campaign <span style="color:var(--ink-3);">(live instance)</span></td>
+              <td><span class="netbadge">Creditcoin CC3 Testnet</span></td>
+              <td class="mono">0xF6F1A1B74C269DB78f100af34aC36B96a7bB7b52</td>
+            </tr>
+            <tr>
+              <td>CampaignFactory <span style="color:var(--ink-3);">(v1, superseded)</span></td>
+              <td><span class="netbadge">Creditcoin CC3 Testnet</span></td>
+              <td class="mono">0x9189dD93aE978aa83d5aedFa3c394Af2A569231a</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="limitations">
+        <h2>What this is, and isn't, doing</h2>
+        <p>Precision here matters more than a polished story. Two things are worth stating plainly.</p>
+
+        <div class="limit-card">
+          <h4>Verification proves a fact. It doesn't move money.</h4>
+          <p>Attestcoin confirms a payment happened on the source chain — it does not teleport funds. Payout capital on Creditcoin is deposited separately by the creator. This is correct cross-chain design, not a missing feature: mixing "proof of fact" with "custody of funds" is exactly the kind of coupling that makes bridges risky.</p>
+        </div>
+        <div class="limit-card">
+          <h4>Revenue units are currently a 1:1 numeric mapping.</h4>
+          <p>The wei-denominated value from the source-chain event is used directly as the accounting number for the revenue split, without a unit-conversion or price-oracle step. Correct for a same-scale testnet demo; a production version would need an explicit settlement-asset design rather than assuming source-chain value and Creditcoin value are numerically interchangeable.</p>
+        </div>
+      
+        <h3>Known attack surface</h3>
+        <p>Naming this plainly matters more than a clean narrative. Attestcoin proves a transaction happened on the source chain — it does not prove the transaction represents genuine, arm's-length revenue.</p>
+
+        <div class="limit-card">
+          <h4>RoyaltyPayer accepts any caller and any amount</h4>
+          <p>Anyone, including the creator themselves, can call payRoyalty() with their own funds and pass every check we perform: real transaction, real success status, correct source contract, correct creator address. The cryptographic proof is genuine; the economic story behind it may not be.</p>
+        </div>
+        <div class="limit-card">
+          <h4>A campaign can show as fully repaid without funds to back it</h4>
+          <p>rightsReverted flips once totalRepaidToInvestors crosses the return cap - a pure accounting threshold, not a check against the contract's actual balance. A large fabricated payment could mark a campaign "Completed" while investors hold an unclaimable balance, since claimPayout() still requires real deposited funds.</p>
+        </div>
+        <div class="limit-card">
+          <h4>No default or refund mechanism exists yet</h4>
+          <p>If a creator raises capital and never triggers further verified revenue, there is no collateral, penalty, or refund path. Investor risk is real and, currently, not disclosed anywhere in the product itself.</p>
+        </div>
+
+        <h3>Planned mitigations, not yet implemented</h3>
+        <ul>
+          <li><strong>Restricted revenue sources.</strong> In a real deployment, RoyaltyPayer should not be an open contract IPLink controls - it should point at a creator's actual, independently verified distributor payout contract, established once during onboarding rather than left permissionless.</li>
+          <li><strong>Balance-gated completion status.</strong> Gate the "Completed" state on the contract's actual balance, not just the accounting threshold, so the interface can never show a campaign as repaid when it isn't.</li>
+          <li><strong>Explicit risk disclosure.</strong> This is unsecured revenue-share financing. Investor risk is real by design, the same way it is in real-world revenue-based financing deals, and the product should say so plainly rather than leaving it implicit.</li>
+        </ul>
+</section>
+
+      <footer>
+        IPLink — built for BUIDL CTC 2026 Fall. Every address and transaction above is live and independently verifiable.
+      </footer>
+
+    </div>
+  </main>
+
+</div>
+
+<script>
+  document.querySelectorAll('.code-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.code-body').forEach(b => b.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>

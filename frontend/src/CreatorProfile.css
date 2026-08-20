@@ -1,0 +1,9 @@
+.card.wide { max-width: 580px; }
+.profile-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.profile-eyebrow { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); margin-bottom: 3px; }
+.profile-desc { margin-top: 14px; max-width: 460px; }
+.metric-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.metric { background: var(--bg-alt); border-radius: 12px; padding: 14px 16px; }
+.metric-label { font-size: 11.5px; color: var(--ink-3); margin-bottom: 4px; }
+.metric-value { font-family: var(--font-head); font-weight: 600; font-size: 18px; color: var(--ink); }
+.chip-link:hover { border-color: var(--blue-2); color: var(--ink); }

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPLink — Fund creators on proof</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #08080B;
+    --ink-2: #5A5A66;
+    --ink-3: #96959F;
+    --border: #E8E8ED;
+    --blue-1: #1140F5;
+    --blue-2: #5B8FFF;
+    --bg: #FFFFFF;
+    --font-display: 'Inter Tight', -apple-system, sans-serif;
+    --font-body: 'DM Sans', -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink-2);
+    font-family: var(--font-body);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  a { text-decoration: none; color: inherit; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--blue-1); outline-offset: 3px; border-radius: 999px; }
+
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sweep {
+    position: absolute;
+    inset: -20% -10% auto -10%;
+    height: 130%;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(58% 42% at 18% 88%, rgba(17, 64, 245, 0.13) 0%, rgba(17, 64, 245, 0) 62%),
+      radial-gradient(48% 38% at 88% 22%, rgba(91, 143, 255, 0.14) 0%, rgba(91, 143, 255, 0) 60%),
+      radial-gradient(90% 65% at 50% 118%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 55%);
+    filter: blur(46px);
+  }
+
+  .sweep-arc {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: 150vmax;
+    height: 150vmax;
+    transform: translate(-50%, -50%) rotate(-14deg);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    background: transparent;
+    box-shadow: 0 -1px 90px 40px rgba(255, 255, 255, 0.9);
+    opacity: 0.85;
+  }
+
+  nav {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 26px 44px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 30px;
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+  .nav-links a { transition: color 0.18s ease; }
+  .nav-links a:hover { color: var(--ink); }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    justify-self: center;
+  }
+  .brand-mark {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: linear-gradient(140deg, var(--blue-1), var(--blue-2));
+    flex-shrink: 0;
+  }
+  .brand-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 16.5px;
+    letter-spacing: 0.14em;
+    color: var(--ink);
+    text-transform: uppercase;
+  }
+
+  .nav-cta { justify-self: end; }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 14px;
+    padding: 11px 22px;
+    border-radius: 999px;
+    transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    white-space: nowrap;
+  }
+  .pill svg { width: 12px; height: 12px; }
+  .pill.solid {
+    background: var(--ink);
+    color: #FFFFFF;
+    border: 1px solid var(--ink);
+  }
+  .pill.solid:hover { transform: translateY(-1px); background: #1A1A20; }
+  .pill.ghost {
+    background: rgba(255, 255, 255, 0.6);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+  }
+  .pill.ghost:hover { transform: translateY(-1px); border-color: #C9C9D2; }
+  .pill.small { padding: 9px 18px; font-size: 13.5px; }
+
+  .hero-body {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 28px 90px;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(40px, 6.4vw, 78px);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+    margin: 0 0 26px;
+    max-width: 15ch;
+  }
+  h1 .muted-line {
+    display: block;
+    color: var(--ink-3);
+  }
+
+  .hero-copy {
+    font-size: clamp(15px, 1.4vw, 17px);
+    line-height: 1.72;
+    color: var(--ink-2);
+    max-width: 560px;
+    margin: 0 0 38px;
+  }
+
+  .cta-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  @media (max-width: 860px) {
+    nav {
+      grid-template-columns: auto auto;
+      gap: 16px;
+      padding: 20px 24px;
+    }
+    .nav-links { display: none; }
+    .brand { justify-self: start; }
+    .hero-body { padding: 20px 24px 80px; }
+    h1 { max-width: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pill:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="sweep" aria-hidden="true"></div>
+    <div class="sweep-arc" aria-hidden="true"></div>
+
+    <nav>
+      <div class="nav-links">
+        <a href="#how">How it works</a>
+        <a href="#why">Why Attestcoin</a>
+        <a href="/docs/iplink-technical-integration.html">Docs</a>
+      </div>
+
+      <a href="/" class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">IPLink</span>
+      </a>
+
+      <div class="nav-cta">
+        <a href="/app" class="pill ghost small">Launch app</a>
+      </div>
+    </nav>
+
+    <div class="hero-body">
+      <h1>
+        Fund creators on proof.
+        <span class="muted-line">Not promises.</span>
+      </h1>
+
+      <p class="hero-copy">
+        IPLink turns a creator's future revenue into capital they can raise against today. Every payment is verified on-chain by the Attestcoin Protocol before a single payout moves — no oracle operator, no self-reported numbers, nothing anyone has to take on trust.
+      </p>
+
+      <div class="cta-row">
+        <a href="/app" class="pill solid">
+          Launch app
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+        </a>
+        <a href="/docs/iplink-technical-integration.html" class="pill ghost">
+          Read the docs
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
