@@ -33,7 +33,7 @@ export default function Landing() {
 
         <Link to="/" className="brand">
           <img src="/assets/iplink-logo.png" alt="" className="brand-mark" />
-          <span className="brand-name">IPLink</span>
+          <span className="brand-name">IPlink</span>
         </Link>
 
         <div className="nav-cta">
@@ -48,7 +48,7 @@ export default function Landing() {
         </h1>
 
         <p className="hero-copy">
-          IPLink turns a creator's future revenue into capital they can raise against today.
+          IPlink turns a creator's future revenue into capital they can raise against today.
           Every payment is verified on-chain by the Attestcoin Protocol before a single payout
           moves — no oracle operator, no self-reported numbers, nothing anyone has to take on trust.
         </p>

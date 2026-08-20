@@ -5,7 +5,7 @@ const OPTIONS = [
   {
     verdict: "Rejected",
     title: "A token bridge",
-    body: "Bridges move assets between chains. IPLink doesn't need to move anything — it needs to prove a payment happened where it happened. Right tool, wrong problem.",
+    body: "Bridges move assets between chains. IPlink doesn't need to move anything — it needs to prove a payment happened where it happened. Right tool, wrong problem.",
     chosen: false,
   },
   {

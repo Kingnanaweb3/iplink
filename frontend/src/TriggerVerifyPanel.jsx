@@ -6,7 +6,7 @@ import { creditcoinTestnet } from "./lib/wagmi";
 import { sepoliaPublicClient, creditcoinPublicClient } from "./lib/clients";
 import { ROYALTY_PAYER_ADDRESS, ROYALTY_PAYER_ABI, CAMPAIGN_ABI } from "./lib/contracts";
 
-const RELAY_URL = "http://localhost:8787/generate-proof";
+const RELAY_URL = import.meta.env.VITE_RELAY_URL || "https://iplink-production.up.railway.app/generate-proof";
 const STEPS = ["Payment sent on Sepolia", "Generating inclusion proof", "Verified on Creditcoin"];
 
 export default function TriggerVerifyPanel({ campaignAddress, creatorAddress, onVerified }) {

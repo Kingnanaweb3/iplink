@@ -47,7 +47,7 @@ function AppShell() {
       {!isLanding && (
         <div className="topbar">
           <div className="topbar-left">
-            <a href="/" className="logo"><img src="/assets/iplink-logo.png" alt="" className="mark" />IPLink</a>
+            <a href="/" className="logo"><img src="/assets/iplink-logo.png" alt="" className="mark" />IPlink</a>
             <nav className="topnav">
               <NavLink to="/app" end className={({ isActive }) => (isActive ? "active" : "")}>Campaigns</NavLink>
             </nav>

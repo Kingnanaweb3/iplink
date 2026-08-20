@@ -65,7 +65,7 @@ export default function LandingFooter() {
         <div className="footer-top">
           <div className="footer-brand">
             <img src="/assets/iplink-logo.png" alt="" className="footer-mark" />
-            <span className="footer-name">IPLink</span>
+            <span className="footer-name">IPlink</span>
             <p className="footer-tagline">
               Verified royalty financing, built on the Attestcoin Protocol.
             </p>

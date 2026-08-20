@@ -51,7 +51,7 @@ export default function LandingSolution() {
           <h2>Any IP that earns can be financed</h2>
           <p>
             Traditional lenders can't underwrite a music catalog or a game's item sales — there's no
-            way to prove the income is real. IPLink makes that income verifiable on-chain, so it
+            way to prove the income is real. IPlink makes that income verifiable on-chain, so it
             becomes something a creator can actually raise against.
           </p>
 
