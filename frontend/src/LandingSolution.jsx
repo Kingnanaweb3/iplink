@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { CircleCheck } from "lucide-react";
+import { Music, Gamepad2, PlaySquare, FileText } from "lucide-react";
 import { getFactory, getCampaign, getVerifiedRevenueEvents } from "./lib/contracts";
 import "./LandingSolution.css";
 
 const CAPABILITIES = [
-  "Music royalties",
-  "In-game revenue",
-  "Video & streaming",
-  "Licensed content",
+  { label: "Music royalties", note: "Streaming and sync income", Icon: Music },
+  { label: "In-game revenue", note: "Item and cosmetic sales", Icon: Gamepad2 },
+  { label: "Video & streaming", note: "Channel and platform payouts", Icon: PlaySquare },
+  { label: "Licensed content", note: "Usage and licensing fees", Icon: FileText },
 ];
 
 export default function LandingSolution() {
@@ -56,10 +56,15 @@ export default function LandingSolution() {
           </p>
 
           <div className="capability-grid">
-            {CAPABILITIES.map((label) => (
+            {CAPABILITIES.map(({ label, note, Icon }) => (
               <div className="capability" key={label}>
-                <CircleCheck className="capability-check" size={21} strokeWidth={2} />
-                {label}
+                <span className="capability-icon">
+                  <Icon size={17} strokeWidth={1.9} />
+                </span>
+                <span className="capability-text">
+                  <span className="capability-label">{label}</span>
+                  <span className="capability-note">{note}</span>
+                </span>
               </div>
             ))}
           </div>

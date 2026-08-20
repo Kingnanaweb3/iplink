@@ -224,3 +224,39 @@
 @media (prefers-reduced-motion: reduce) {
   .orbit-img, .orbit-wrap { animation: none; }
 }
+
+.nav-burger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--l-ink);
+  cursor: pointer;
+  padding: 6px;
+  justify-self: end;
+}
+
+.nav-drawer {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 24px 18px;
+}
+.nav-drawer a {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  color: var(--l-ink);
+  padding: 13px 0;
+  border-bottom: 1px solid rgba(8, 8, 11, 0.07);
+  text-decoration: none;
+}
+.nav-drawer a:last-child { border-bottom: none; font-weight: 500; }
+
+@media (max-width: 860px) {
+  .landing-nav { grid-template-columns: 1fr auto; }
+  .nav-burger { display: flex; }
+  .nav-cta { display: none; }
+  .hero-body h1 .line { font-size: clamp(34px, 8.6vw, 52px); }
+  .hero-body { padding-top: 8px; }
+}

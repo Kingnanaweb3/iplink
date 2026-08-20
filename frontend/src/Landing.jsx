@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import LandingSolution from "./LandingSolution";
 import LandingPipeline from "./LandingPipeline";
@@ -6,6 +8,7 @@ import LandingWhy from "./LandingWhy";
 import LandingAudience from "./LandingAudience";
 import LandingFaq from "./LandingFaq";
 import LandingFooter from "./LandingFooter";
+import useScrollReveal from "./useScrollReveal";
 import "./Landing.css";
 
 function ArrowIcon() {
@@ -17,6 +20,9 @@ function ArrowIcon() {
 }
 
 export default function Landing() {
+  const [navOpen, setNavOpen] = useState(false);
+  useScrollReveal();
+
   return (
     <>
       <div className="hero">
@@ -36,10 +42,28 @@ export default function Landing() {
           <span className="brand-name">IPlink</span>
         </Link>
 
+        <button
+          className="nav-burger"
+          onClick={() => setNavOpen((v) => !v)}
+          aria-label={navOpen ? "Close menu" : "Open menu"}
+          aria-expanded={navOpen}
+        >
+          {navOpen ? <X size={20} strokeWidth={2} /> : <Menu size={20} strokeWidth={2} />}
+        </button>
+
         <div className="nav-cta">
           <Link to="/app" className="pill ghost small">Launch app</Link>
         </div>
       </nav>
+
+      {navOpen && (
+        <div className="nav-drawer">
+          <a href="#how" onClick={() => setNavOpen(false)}>How it works</a>
+          <a href="#why-creditcoin" onClick={() => setNavOpen(false)}>Why Attestcoin</a>
+          <a href="/docs/iplink-technical-integration.html">Docs</a>
+          <Link to="/app" onClick={() => setNavOpen(false)}>Launch app</Link>
+        </div>
+      )}
 
       <div className="hero-body">
         <h1>
