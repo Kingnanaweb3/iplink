@@ -73,7 +73,8 @@ a { color: inherit; text-decoration: none; }
   background: var(--verified-bg); padding: 2px 6px; border-radius: 999px;
 }
 
-html, body { overflow-x: hidden; max-width: 100vw; }
+html { overflow-x: clip; }
+body { overflow-x: clip; width: 100%; }
 
 .logo { font-family: 'Inter Tight', sans-serif; font-weight: 500; letter-spacing: -0.025em; }
 .logo .mark { width: 26px; height: 26px; border-radius: 8px; object-fit: cover; display: block; background: none; }
@@ -90,4 +91,35 @@ html, body { overflow-x: hidden; max-width: 100vw; }
 
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* nothing may exceed the viewport */
+.solution-copy h2,
+.solution-copy > p,
+.pipeline-head h2,
+.pipeline-head p,
+.proof-head h2,
+.proof-head p,
+.why-head h2,
+.why-head p,
+.audience-head h2,
+.audience-copy h3,
+.audience-copy p,
+.faq-head h2,
+.closing-cta h2,
+.closing-cta p,
+.hero-copy {
+  max-width: min(100%, var(--measure, 60ch));
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 700px) {
+  .solution-inner,
+  .pipeline-grid,
+  .proof-grid,
+  .why-grid,
+  .audience-panel,
+  .faq-list {
+    max-width: 100%;
+  }
 }
