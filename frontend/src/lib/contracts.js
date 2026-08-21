@@ -2,8 +2,8 @@ import { JsonRpcProvider, Contract } from "ethers";
 import { parseAbi } from "viem";
 
 export const CREDITCOIN_RPC_URL = "https://rpc.cc3-testnet.creditcoin.network";
-export const FACTORY_ADDRESS = "0xF9923DF74FFA56cdcceAd8D4c2d16B32C61AB632";
-export const ROYALTY_PAYER_ADDRESS = "0x764C566eED1EFb674Fd42f2d1dfa7FF29FCba6b3";
+export const FACTORY_ADDRESS = "0x5748fAf08a3e543841b2b2c6E677d4fb5F7EC6F1";
+export const ROYALTY_PAYER_ADDRESS = "0xC8DA25fCd256Cd1642F83c78a0ccbD1bC65e52A5";
 
 const FACTORY_ABI_STR = ["function getAllCampaigns() view returns (address[])"];
 
@@ -19,6 +19,11 @@ const CAMPAIGN_ABI_STR = [
   "function funded() view returns (bool)",
   "function rightsReverted() view returns (bool)",
   "function pendingPayout(address investor) view returns (uint256)",
+  "function fundingDeadline() view returns (uint256)",
+  "function capitalReleased() view returns (bool)",
+  "function reserveAmount() view returns (uint256)",
+  "function isFullyBacked() view returns (bool)",
+  "function refund()",
   "function invest() payable",
   "function releaseCapital()",
   "function depositPayoutFunds() payable",
@@ -28,7 +33,7 @@ const CAMPAIGN_ABI_STR = [
 ];
 
 const TOKEN_ABI_STR = ["function name() view returns (string)", "function symbol() view returns (string)"];
-const ROYALTY_PAYER_ABI_STR = ["function payRoyalty(address creator, string period) payable"];
+const ROYALTY_PAYER_ABI_STR = ["function payRoyalty(address campaign, address creator, string period) payable"];
 
 export const CAMPAIGN_ABI = parseAbi(CAMPAIGN_ABI_STR);
 export const ROYALTY_PAYER_ABI = parseAbi(ROYALTY_PAYER_ABI_STR);

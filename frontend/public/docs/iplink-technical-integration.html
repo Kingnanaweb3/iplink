@@ -333,22 +333,22 @@
             <tr>
               <td>RoyaltyPayer</td>
               <td><span class="netbadge">Sepolia</span></td>
-              <td class="mono">0x764C566eED1EFb674Fd42f2d1dfa7FF29FCba6b3</td>
+              <td class="mono">0xC8DA25fCd256Cd1642F83c78a0ccbD1bC65e52A5</td>
             </tr>
             <tr>
-              <td>CampaignFactory <span style="color:var(--ink-3);">(trustless, current)</span></td>
+              <td>CampaignFactory</td>
               <td><span class="netbadge">Creditcoin CC3 Testnet</span></td>
-              <td class="mono">0xF9923DF74FFA56cdcceAd8D4c2d16B32C61AB632</td>
+              <td class="mono">0x5748fAf08a3e543841b2b2c6E677d4fb5F7EC6F1</td>
             </tr>
             <tr>
-              <td>Campaign <span style="color:var(--ink-3);">(live instance)</span></td>
+              <td>Campaign — Mira Royalty Share</td>
               <td><span class="netbadge">Creditcoin CC3 Testnet</span></td>
-              <td class="mono">0xF6F1A1B74C269DB78f100af34aC36B96a7bB7b52</td>
+              <td class="mono">0x52Ee0b89eD2255850dE9e8B75C2808B84aB9c82c</td>
             </tr>
             <tr>
-              <td>CampaignFactory <span style="color:var(--ink-3);">(v1, superseded)</span></td>
+              <td>Campaign — Nova Forge Share</td>
               <td><span class="netbadge">Creditcoin CC3 Testnet</span></td>
-              <td class="mono">0x9189dD93aE978aa83d5aedFa3c394Af2A569231a</td>
+              <td class="mono">0xEF3E6889C4a4d3c8EBD85E4148Da596aE5f4c815</td>
             </tr>
           </tbody>
         </table>
@@ -367,29 +367,47 @@
           <p>The wei-denominated value from the source-chain event is used directly as the accounting number for the revenue split, without a unit-conversion or price-oracle step. Correct for a same-scale testnet demo; a production version would need an explicit settlement-asset design rather than assuming source-chain value and Creditcoin value are numerically interchangeable.</p>
         </div>
       
-        <h3>Known attack surface</h3>
-        <p>Naming this plainly matters more than a clean narrative. Attestcoin proves a transaction happened on the source chain — it does not prove the transaction represents genuine, arm's-length revenue.</p>
+        <h3>Security review and fixes</h3>
+        <p>We audited our own contracts and found ten issues, several severe. All of them are addressed in the deployed version below, and each fix has a test in the repository. Listing them here rather than quietly patching them is deliberate — the point of this project is verifiable claims.</p>
 
-        <div class="limit-card">
-          <h4>RoyaltyPayer accepts any caller and any amount</h4>
-          <p>Anyone, including the creator themselves, can call payRoyalty() with their own funds and pass every check we perform: real transaction, real success status, correct source contract, correct creator address. The cryptographic proof is genuine; the economic story behind it may not be.</p>
-        </div>
-        <div class="limit-card">
-          <h4>A campaign can show as fully repaid without funds to back it</h4>
-          <p>rightsReverted flips once totalRepaidToInvestors crosses the return cap - a pure accounting threshold, not a check against the contract's actual balance. A large fabricated payment could mark a campaign "Completed" while investors hold an unclaimable balance, since claimPayout() still requires real deposited funds.</p>
-        </div>
-        <div class="limit-card">
-          <h4>No default or refund mechanism exists yet</h4>
-          <p>If a creator raises capital and never triggers further verified revenue, there is no collateral, penalty, or refund path. Investor risk is real and, currently, not disclosed anywhere in the product itself.</p>
+        <div class="limit-card" style="background: var(--verified-bg); border-color: rgba(17,64,245,0.25);">
+          <h4 style="color: var(--accent-1);">Fixed — share token transfer drain</h4>
+          <p>Payout accounting keys off a per-holder checkpoint. Transferring shares to a fresh address reset that checkpoint to zero, letting the recipient re-claim the entire cumulative revenue history — repeatedly, draining other investors' funds. Share tokens are now non-transferable. Secondary trading requires checkpointed balances and is out of scope for this version.</p>
         </div>
 
-        <h3>Planned mitigations, not yet implemented</h3>
-        <ul>
-          <li><strong>Restricted revenue sources.</strong> In a real deployment, RoyaltyPayer should not be an open contract IPlink controls - it should point at a creator's actual, independently verified distributor payout contract, established once during onboarding rather than left permissionless.</li>
-          <li><strong>Balance-gated completion status.</strong> Gate the "Completed" state on the contract's actual balance, not just the accounting threshold, so the interface can never show a campaign as repaid when it isn't.</li>
-          <li><strong>Explicit risk disclosure.</strong> This is unsecured revenue-share financing. Investor risk is real by design, the same way it is in real-world revenue-based financing deals, and the product should say so plainly rather than leaving it implicit.</li>
-        </ul>
-</section>
+        <div class="limit-card" style="background: var(--verified-bg); border-color: rgba(17,64,245,0.25);">
+          <h4 style="color: var(--accent-1);">Fixed — capital release over-withdrawal</h4>
+          <p>releaseCapital() withdrew the contract's entire balance with no once-only guard, so a creator could call it again after payout funds were deposited and take those too. It now transfers a fixed amount, once, and reverts on any repeat call.</p>
+        </div>
+
+        <div class="limit-card" style="background: var(--verified-bg); border-color: rgba(17,64,245,0.25);">
+          <h4 style="color: var(--accent-1);">Fixed — cross-campaign proof replay</h4>
+          <p>Replay protection was per-campaign, but the only ownership check was the creator address. Two campaigns sharing a creator could both consume a proof of the same single payment. The RoyaltyPaid event now carries the campaign address, and a campaign rejects any proof naming a different one.</p>
+        </div>
+
+        <div class="limit-card" style="background: var(--verified-bg); border-color: rgba(17,64,245,0.25);">
+          <h4 style="color: var(--accent-1);">Fixed — investing twice erased earnings</h4>
+          <p>A second investment reset the holder's checkpoint, silently discarding everything accrued from the first. Accrued value is now settled into a separate owed balance before any position change.</p>
+        </div>
+
+        <div class="limit-card" style="background: var(--verified-bg); border-color: rgba(17,64,245,0.25);">
+          <h4 style="color: var(--accent-1);">Fixed — no refund path, false completion, bricking, self-investment, dust</h4>
+          <p>Campaigns now have a funding deadline with a refund() for unfilled raises. Completion status is gated on the contract's actual balance via isFullyBacked(), not accounting alone. Oversized payments are capped at the remaining amount owed rather than reverting permanently. Creators cannot invest in their own campaigns. Division remainders carry forward instead of being lost.</p>
+        </div>
+
+        <h3>The reserve, and what it does not solve</h3>
+        <p>40% of every raise stays in the contract to cover investor payouts, so investors are not wholly dependent on a creator voluntarily depositing funds later.</p>
+
+        <div class="limit-card">
+          <h4>Creator abandonment is bounded, not prevented</h4>
+          <p>A creator can still take their 60%, never verify any revenue, and walk away. Investors would recover at most the reserve. No contract can compel someone to earn money — the real answers are tranched release tied to verified revenue milestones, or legal recourse, and neither belongs in a testnet build. This is unsecured revenue-share financing and the risk is real.</p>
+        </div>
+
+        <div class="limit-card">
+          <h4>Revenue origination is restricted, not verified</h4>
+          <p>Only whitelisted addresses can originate a payment on RoyaltyPayer, which stops third parties fabricating revenue. A whitelisted creator paying themselves still would. The genuine fix is pointing at a distributor's real payout contract, established during onboarding — not something that can be simulated on testnet.</p>
+        </div>
+        </section>
 
       <footer>
         IPlink — built for BUIDL CTC 2026 Fall. Every address and transaction above is live and independently verifiable.

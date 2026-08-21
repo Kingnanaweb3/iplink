@@ -26,7 +26,7 @@ export default function TriggerVerifyPanel({ campaignAddress, creatorAddress, on
         address: ROYALTY_PAYER_ADDRESS,
         abi: ROYALTY_PAYER_ABI,
         functionName: "payRoyalty",
-        args: [creatorAddress, new Date().toISOString().slice(0, 7)],
+        args: [campaignAddress, creatorAddress, new Date().toISOString().slice(0, 7)],
         value: parseEther("0.001"),
         chainId: sepolia.id,
       });

@@ -9,6 +9,8 @@ contract CampaignFactory {
 
     event CampaignCreated(address indexed campaign, address indexed creator, uint256 raiseGoal);
 
+    error InvalidTerms();
+
     constructor(address _royaltyPayer) {
         royaltyPayer = _royaltyPayer;
     }
@@ -18,9 +20,16 @@ contract CampaignFactory {
         uint256 revenueShareBps,
         uint256 returnCapAmount,
         uint256 termLengthSeconds,
+        uint256 fundingWindowSeconds,
         string calldata tokenName,
         string calldata tokenSymbol
     ) external returns (address) {
+        if (raiseGoal == 0) revert InvalidTerms();
+        if (revenueShareBps == 0 || revenueShareBps > 10000) revert InvalidTerms();
+        if (returnCapAmount < raiseGoal) revert InvalidTerms();
+        if (termLengthSeconds == 0 || fundingWindowSeconds == 0) revert InvalidTerms();
+        if (fundingWindowSeconds > termLengthSeconds) revert InvalidTerms();
+
         Campaign campaign = new Campaign(
             msg.sender,
             royaltyPayer,
@@ -28,9 +37,11 @@ contract CampaignFactory {
             revenueShareBps,
             returnCapAmount,
             termLengthSeconds,
+            fundingWindowSeconds,
             tokenName,
             tokenSymbol
         );
+
         allCampaigns.push(address(campaign));
         emit CampaignCreated(address(campaign), msg.sender, raiseGoal);
         return address(campaign);

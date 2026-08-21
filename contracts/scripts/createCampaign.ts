@@ -1,42 +1,50 @@
 import hre from "hardhat";
 
+const FACTORY = "0x5748fAf08a3e543841b2b2c6E677d4fb5F7EC6F1";
+const DAY = 60 * 60 * 24;
+
+const CAMPAIGNS = [
+  {
+    goal: "0.01",
+    shareBps: 2500n,
+    cap: "0.015",
+    term: 90 * DAY,
+    window: 30 * DAY,
+    name: "Mira Royalty Share",
+    symbol: "MIRA",
+  },
+  {
+    goal: "0.01",
+    shareBps: 2000n,
+    cap: "0.014",
+    term: 90 * DAY,
+    window: 30 * DAY,
+    name: "Nova Forge Share",
+    symbol: "NOVA",
+  },
+];
+
 async function main() {
   const { ethers } = await hre.network.create("creditcoin");
-
-  const factoryAddress = "0xF9923DF74FFA56cdcceAd8D4c2d16B32C61AB632";
-  const factory = await ethers.getContractAt("CampaignFactory", factoryAddress);
-
+  const factory = await ethers.getContractAt("CampaignFactory", FACTORY);
   const [creator] = await ethers.getSigners();
 
-  const raiseGoal = ethers.parseEther("0.01"); // testnet-scale amount
-  const revenueShareBps = 2500n; // 25%
-  const returnCap = ethers.parseEther("0.015"); // 1.5x
-  const termLength = 60 * 60 * 24 * 30; // 30 days
-
-  const tx = await factory.connect(creator).createCampaign(
-    raiseGoal,
-    revenueShareBps,
-    returnCap,
-    termLength,
-    "IPLink Royalty Share",
-    "IPLR",
-  );
-  const receipt = await tx.wait();
-
-  const event = receipt!.logs
-    .map((log) => {
-      try {
-        return factory.interface.parseLog(log);
-      } catch {
-        return null;
-      }
-    })
-    .find((parsed) => parsed?.name === "CampaignCreated");
-
-  console.log("Campaign created at:", event!.args.campaign);
+  for (const c of CAMPAIGNS) {
+    const tx = await factory.connect(creator).createCampaign(
+      ethers.parseEther(c.goal),
+      c.shareBps,
+      ethers.parseEther(c.cap),
+      c.term,
+      c.window,
+      c.name,
+      c.symbol,
+    );
+    const receipt = await tx.wait();
+    const event = receipt!.logs
+      .map((l) => { try { return factory.interface.parseLog(l); } catch { return null; } })
+      .find((p) => p?.name === "CampaignCreated");
+    console.log(c.name, "->", event!.args.campaign);
+  }
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exitCode = 1;
-});
+main().catch((err) => { console.error(err); process.exitCode = 1; });

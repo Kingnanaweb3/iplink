@@ -1,5 +1,5 @@
 export const CAMPAIGN_METADATA = {
-  "0xf6f1a1b74c269db78f100af34ac36b96a7bb7b52": {
+  "0x52ee0b89ed2255850de9e8b75c2808b84ab9c82c": {
     title: "Mira's music catalog",
     tagline: "Independent artist — streaming royalties",
     description: "A catalog of released tracks earning recurring royalty income from streaming platforms and sync licensing deals.",
@@ -11,7 +11,7 @@ export const CAMPAIGN_METADATA = {
 };
 
 export const CAMPAIGN_METADATA_2 = {
-  "0x8ad4bab556b519e35d8662edc791787f391fa62e": {
+  "0xef3e6889c4a4d3c8ebd85e4148da596ae5f4c815": {
     title: "Nova Forge cosmetic sales",
     tagline: "Indie game studio — in-game item revenue",
     description: "A live-service game earning recurring revenue from cosmetic and item sales through its in-game marketplace.",

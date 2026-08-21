@@ -1,4 +1,5 @@
 {
   "CampaignFactoryModule#CampaignFactory": "0x9189dD93aE978aa83d5aedFa3c394Af2A569231a",
-  "CampaignFactoryV2Module#CampaignFactory": "0xF9923DF74FFA56cdcceAd8D4c2d16B32C61AB632"
+  "CampaignFactoryV2Module#CampaignFactory": "0xF9923DF74FFA56cdcceAd8D4c2d16B32C61AB632",
+  "CampaignFactoryV3Module#CampaignFactory": "0x5748fAf08a3e543841b2b2c6E677d4fb5F7EC6F1"
 }

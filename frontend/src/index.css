@@ -123,3 +123,24 @@ body { overflow-x: clip; width: 100%; }
     max-width: 100%;
   }
 }
+
+@media (max-width: 640px) {
+  .topbar {
+    padding: 14px 18px;
+    gap: 10px;
+    flex-wrap: nowrap;
+  }
+  .topbar-left { gap: 14px; min-width: 0; }
+  .topnav { display: none; }
+  .live-price { display: none; }
+  .wallet-btn {
+    padding: 8px 14px;
+    font-size: 12.5px;
+    white-space: nowrap;
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .logo { font-size: 16px; }
+  .logo .mark { width: 22px; height: 22px; }
+}

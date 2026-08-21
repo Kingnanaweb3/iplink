@@ -7,3 +7,9 @@
 .metric-label { font-size: 11.5px; color: var(--ink-3); margin-bottom: 4px; }
 .metric-value { font-family: var(--font-head); font-weight: 600; font-size: 18px; color: var(--ink); }
 .chip-link:hover { border-color: var(--blue-2); color: var(--ink); }
+
+@media (max-width: 640px) {
+  .metric-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .metric { padding: 12px; }
+  .metric-value { font-size: 16px; }
+}

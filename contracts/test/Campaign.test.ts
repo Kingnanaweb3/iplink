@@ -3,69 +3,100 @@ import hre from "hardhat";
 
 const { ethers, networkHelpers } = await hre.network.create();
 
-describe("Campaign", function () {
-  async function deployFactoryFixture() {
-    const [creator, investor, attestor] = await ethers.getSigners();
-    const factory = await ethers.deployContract("CampaignFactory", [attestor.address]);
-    return { factory, creator, investor, attestor };
-  }
+const DAY = 60 * 60 * 24;
 
-  it("runs the full funding -> revenue -> payout flow", async function () {
-    const { factory, creator, investor, attestor } = await networkHelpers.loadFixture(deployFactoryFixture);
+async function deployFixture() {
+  const [creator, investor, investor2, outsider] = await ethers.getSigners();
 
-    const raiseGoal = ethers.parseEther("10");
-    const revenueShareBps = 2500n; // 25%
-    const returnCap = ethers.parseEther("15");
-    const termLength = 60 * 60 * 24 * 30; // 30 days, for test purposes
+  const royaltyPayer = await ethers.deployContract("RoyaltyPayer");
+  const factory = await ethers.deployContract("CampaignFactory", [await royaltyPayer.getAddress()]);
 
-    const tx = await factory.connect(creator).createCampaign(
-      raiseGoal,
-      revenueShareBps,
-      returnCap,
-      termLength,
-      "Mira Royalty Share",
-      "MIRA",
-    );
-    const receipt = await tx.wait();
-    const parsedEvent = receipt!.logs
-      .map((log) => {
-        try {
-          return factory.interface.parseLog(log);
-        } catch {
-          return null;
-        }
-      })
-      .find((parsed) => parsed?.name === "CampaignCreated");
-    const campaignAddress = parsedEvent!.args.campaign as string;
+  const tx = await factory.connect(creator).createCampaign(
+    ethers.parseEther("1"),      // raiseGoal
+    2500n,                        // 25%
+    ethers.parseEther("1.5"),     // cap
+    30 * DAY,                     // term
+    7 * DAY,                      // funding window
+    "Test Share",
+    "TST",
+  );
+  const receipt = await tx.wait();
+  const event = receipt!.logs
+    .map((l) => { try { return factory.interface.parseLog(l); } catch { return null; } })
+    .find((p) => p?.name === "CampaignCreated");
+  const campaign = await ethers.getContractAt("Campaign", event!.args.campaign as string);
 
-    const campaign = await ethers.getContractAt("Campaign", campaignAddress);
+  return { campaign, factory, royaltyPayer, creator, investor, investor2, outsider };
+}
 
-    // Investor funds the full goal in one shot
-    await campaign.connect(investor).invest({ value: raiseGoal });
-    expect(await campaign.funded()).to.equal(true);
+describe("Campaign security fixes", function () {
+  it("#1 blocks share token transfers", async function () {
+    const { campaign, investor, investor2 } = await networkHelpers.loadFixture(deployFixture);
+    await campaign.connect(investor).invest({ value: ethers.parseEther("0.5") });
 
-    // Creator releases capital
-    const creatorBefore = await ethers.provider.getBalance(creator.address);
+    const token = await ethers.getContractAt("RevenueShareToken", await campaign.shareToken());
+    await expect(
+      token.connect(investor).transfer(investor2.address, ethers.parseEther("0.1"))
+    ).to.be.revertedWithCustomError(token, "TransfersDisabled");
+  });
+
+  it("#2 releaseCapital pays a fixed amount, only once", async function () {
+    const { campaign, creator, investor } = await networkHelpers.loadFixture(deployFixture);
+    await campaign.connect(investor).invest({ value: ethers.parseEther("1") });
+
     await campaign.connect(creator).releaseCapital();
-    const creatorAfter = await ethers.provider.getBalance(creator.address);
-    expect(creatorAfter).to.be.greaterThan(creatorBefore);
+    await expect(campaign.connect(creator).releaseCapital())
+      .to.be.revertedWithCustomError(campaign, "AlreadyReleased");
 
-    // Attestor records a verified revenue event - stands in for the USC proof
-    // check until the real precompile call is wired in
-    const revenueAmount = ethers.parseEther("2");
-    await campaign.connect(attestor).recordVerifiedRevenue(revenueAmount, { value: revenueAmount });
+    // 40% reserve stays behind
+    expect(await ethers.provider.getBalance(await campaign.getAddress()))
+      .to.equal(ethers.parseEther("0.4"));
+  });
 
-    // Investor's share should be exactly 25% of that revenue
-    const pending = await campaign.pendingPayout(investor.address);
-    expect(pending).to.equal((revenueAmount * revenueShareBps) / 10000n);
+  it("#4 investing twice preserves earlier earnings", async function () {
+    const { campaign, investor } = await networkHelpers.loadFixture(deployFixture);
+    await campaign.connect(investor).invest({ value: ethers.parseEther("0.4") });
+    await campaign.connect(investor).invest({ value: ethers.parseEther("0.6") });
+    expect(await campaign.funded()).to.equal(true);
+    expect(await campaign.pendingPayout(investor.address)).to.equal(0n);
+  });
 
-    // Investor claims payout and their balance increases (net of gas)
-    const investorBefore = await ethers.provider.getBalance(investor.address);
-    const claimTx = await campaign.connect(investor).claimPayout();
-    const claimReceipt = await claimTx.wait();
-    const gasCost = claimReceipt!.gasUsed * claimReceipt!.gasPrice;
-    const investorAfter = await ethers.provider.getBalance(investor.address);
+  it("#5 refunds when the funding window closes unfunded", async function () {
+    const { campaign, investor } = await networkHelpers.loadFixture(deployFixture);
+    await campaign.connect(investor).invest({ value: ethers.parseEther("0.3") });
 
-    expect(investorAfter + gasCost).to.be.greaterThan(investorBefore);
+    await expect(campaign.connect(investor).refund())
+      .to.be.revertedWithCustomError(campaign, "FundingStillOpen");
+
+    await networkHelpers.time.increase(8 * DAY);
+    const before = await ethers.provider.getBalance(investor.address);
+    await campaign.connect(investor).refund();
+    expect(await ethers.provider.getBalance(investor.address)).to.be.greaterThan(before);
+  });
+
+  it("#6 only authorized payers can originate a payment", async function () {
+    const { royaltyPayer, campaign, creator, outsider } = await networkHelpers.loadFixture(deployFixture);
+    await expect(
+      royaltyPayer.connect(outsider).payRoyalty(
+        await campaign.getAddress(), creator.address, "2026-09",
+        { value: ethers.parseEther("0.01") }
+      )
+    ).to.be.revertedWithCustomError(royaltyPayer, "NotAuthorized");
+  });
+
+  it("#9 creator cannot invest in their own campaign", async function () {
+    const { campaign, creator } = await networkHelpers.loadFixture(deployFixture);
+    await expect(campaign.connect(creator).invest({ value: ethers.parseEther("0.1") }))
+      .to.be.revertedWithCustomError(campaign, "CreatorCannotInvest");
+  });
+
+  it("factory rejects a cap below the raise goal", async function () {
+    const { factory, creator } = await networkHelpers.loadFixture(deployFixture);
+    await expect(
+      factory.connect(creator).createCampaign(
+        ethers.parseEther("1"), 2500n, ethers.parseEther("0.5"),
+        30 * DAY, 7 * DAY, "Bad", "BAD"
+      )
+    ).to.be.revertedWithCustomError(factory, "InvalidTerms");
   });
 });

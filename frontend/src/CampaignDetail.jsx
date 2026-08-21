@@ -34,16 +34,17 @@ export default function CampaignDetail() {
     async function load() {
       try {
         const campaign = getCampaign(address);
-        const [raiseGoal, totalRaised, revenueShareBps, returnCapAmount, termDeadline, funded, totalRepaid, rightsReverted, tokenAddress, creator] =
+        const [raiseGoal, totalRaised, revenueShareBps, returnCapAmount, termDeadline, funded, totalRepaid, rightsReverted, tokenAddress, creator, fundingDeadline, reserveAmount, capitalReleased] =
           await Promise.all([
             campaign.raiseGoal(), campaign.totalRaised(), campaign.revenueShareBps(), campaign.returnCapAmount(),
             campaign.termDeadline(), campaign.funded(), campaign.totalRepaidToInvestors(), campaign.rightsReverted(),
-            campaign.shareToken(), campaign.creator(),
+            campaign.shareToken(), campaign.creator(), campaign.fundingDeadline(), campaign.reserveAmount(),
+            campaign.capitalReleased(),
           ]);
         const token = getToken(tokenAddress);
         const name = await token.name();
         const pending = connectedAddress ? await campaign.pendingPayout(connectedAddress) : 0n;
-        if (!cancelled) setData({ raiseGoal, totalRaised, revenueShareBps, returnCapAmount, termDeadline, funded, totalRepaid, rightsReverted, name, creator, pending });
+        if (!cancelled) setData({ raiseGoal, totalRaised, revenueShareBps, returnCapAmount, termDeadline, funded, totalRepaid, rightsReverted, name, creator, pending, fundingDeadline, reserveAmount, capitalReleased });
         try {
           const logs = await getVerifiedRevenueEvents(campaign);
           if (!cancelled) setEvents(logs.reverse());
@@ -83,6 +84,9 @@ export default function CampaignDetail() {
   const deadline = new Date(Number(data.termDeadline) * 1000).toLocaleDateString();
   const status = campaignStatus(data);
   const isCreator = isConnected && connectedAddress?.toLowerCase() === data.creator.toLowerCase();
+  const fundingClosed = Date.now() / 1000 >= Number(data.fundingDeadline);
+  const fundingEnds = new Date(Number(data.fundingDeadline) * 1000).toLocaleDateString();
+  const canRefund = !data.funded && fundingClosed;
 
   const remainingWei = data.raiseGoal - data.totalRaised;
   let investWei = null;
@@ -136,6 +140,11 @@ export default function CampaignDetail() {
           </div>
         </div>
 
+        <p className="muted small" style={{ marginTop: "12px" }}>
+          {formatEther(data.reserveAmount)} CTC ({Number(data.reserveAmount * 10000n / data.raiseGoal) / 100}%) of the
+          raise is held in the contract to cover investor payouts. The creator receives the remainder.
+        </p>
+
         <div className="progress-row" style={{ marginTop: "20px" }}><span className="raised">{formatEther(data.totalRaised)} raised</span><span>Goal {formatEther(data.raiseGoal)}</span></div>
         <div className="progress-track"><div className="progress-fill" style={{ width: `${Math.min(percent, 100)}%` }} /></div>
 
@@ -155,7 +164,8 @@ export default function CampaignDetail() {
           <div className="action-block">
             <div className="section-label">Invest</div>
             <p className="muted small" style={{ marginBottom: "8px" }}>
-              {formatEther(remainingWei)} CTC remaining to fully fund this campaign.
+              {formatEther(remainingWei)} CTC remaining · funding closes {fundingEnds}.
+              If the goal isn't met, you can withdraw your full investment.
             </p>
             <div className="input-row">
               <input type="number" step="0.001" value={investAmount} onChange={(e) => setInvestAmount(e.target.value)} />
@@ -172,6 +182,20 @@ export default function CampaignDetail() {
                 That's more than the {formatEther(remainingWei)} CTC remaining — reduce the amount or use Max.
               </p>
             )}
+          </div>
+        )}
+
+        {isConnected && canRefund && (
+          <div className="action-block">
+            <div className="section-label">Funding goal not met</div>
+            <p className="muted small" style={{ marginBottom: "10px" }}>
+              This campaign closed without reaching its goal. Investors can withdraw their full
+              contribution.
+            </p>
+            <button className="cta small" disabled={actionPending} onClick={() => runAction(() =>
+              writeContractAsync({ address, abi: CAMPAIGN_ABI, functionName: "refund", chainId: creditcoinTestnet.id }),
+              "Investment withdrawn."
+            )}>{actionPending ? "Confirming…" : "Withdraw investment"}</button>
           </div>
         )}
 
