@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPlink — User guide</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=DM+Sans:wght@300;400;500&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFFFFF; --sidebar-bg: #F2F3FA; --sidebar-border: #E4E5EF;
+    --ink: #08080B; --ink-2: #5A5A66; --ink-3: #96959F; --border: #E8E8ED;
+    --accent-1: #1140F5; --verified-bg: #EAF0FE;
+    --warn: #B4741F; --warn-bg: #FBF2E4; --radius: 14px;
+    --font-head: 'Inter Tight', -apple-system, sans-serif;
+    --font-body: 'DM Sans', -apple-system, sans-serif;
+    --font-mono: 'Roboto Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink-2); font-family: var(--font-body); font-size: 15.5px; line-height: 1.7; }
+  h1, h2, h3, h4 { font-family: var(--font-head); font-weight: 500; color: var(--ink); letter-spacing: -0.03em; }
+  code { font-family: var(--font-mono); font-size: 0.9em; background: var(--sidebar-bg); padding: 2px 6px; border-radius: 5px; }
+  a { color: var(--accent-1); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .layout { display: grid; grid-template-columns: 272px 1fr; min-height: 100vh; }
+  .sidebar { background: var(--sidebar-bg); border-right: 1px solid var(--sidebar-border); padding: 40px 28px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .sidebar-eyebrow { font-family: var(--font-mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-3); margin-bottom: 8px; }
+  .sidebar-title { font-family: var(--font-head); font-weight: 500; font-size: 19px; color: var(--ink); line-height: 1.3; margin-bottom: 32px; }
+  .sidebar nav { display: flex; flex-direction: column; }
+  .sidebar nav a { color: var(--ink-2); font-size: 14px; padding: 9px 0 9px 12px; margin-left: -14px; border-left: 2px solid transparent; }
+  .sidebar nav a:hover { color: var(--ink); text-decoration: none; border-left-color: var(--accent-1); }
+  .sidebar nav .group { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); margin: 20px 0 6px; }
+  .sidebar-foot { margin-top: 40px; font-size: 12.5px; color: var(--ink-3); }
+
+  .content { padding: 56px 64px 100px; }
+  .content-inner { max-width: 700px; }
+  .doc-title { font-size: 34px; margin: 0 0 12px; }
+  .doc-sub { color: var(--ink-2); font-size: 16px; margin: 0 0 44px; }
+
+  section { padding: 40px 0; border-top: 1px solid var(--border); }
+  section:first-of-type { border-top: none; padding-top: 0; }
+  section h2 { font-size: 23px; margin: 0 0 14px; }
+  section h3 { font-size: 16.5px; margin: 26px 0 8px; }
+  section p { margin: 0 0 14px; }
+  section ul, section ol { padding-left: 20px; margin: 0 0 14px; }
+  section li { margin-bottom: 8px; }
+
+  .step { display: grid; grid-template-columns: 30px 1fr; gap: 14px; padding: 18px 0; border-bottom: 1px solid var(--border); }
+  .step:last-child { border-bottom: none; }
+  .step-num { width: 30px; height: 30px; border-radius: 50%; background: var(--accent-1); color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 13px; font-weight: 500; }
+  .step h4 { margin: 3px 0 6px; font-size: 15.5px; }
+  .step p { margin: 0; font-size: 14.5px; }
+
+  .note { background: var(--verified-bg); border: 1px solid rgba(17,64,245,0.2); border-radius: var(--radius); padding: 16px 18px; margin: 18px 0; }
+  .note p { margin: 0; font-size: 14px; }
+  .warn { background: var(--warn-bg); border: 1px solid color-mix(in srgb, var(--warn) 30%, var(--border)); border-radius: var(--radius); padding: 16px 18px; margin: 18px 0; }
+  .warn h4 { margin: 0 0 5px; font-size: 14.5px; color: var(--warn); }
+  .warn p { margin: 0; font-size: 14px; }
+
+  .faq-q { font-family: var(--font-head); font-weight: 500; font-size: 15.5px; color: var(--ink); margin: 22px 0 6px; }
+
+  footer { padding-top: 32px; border-top: 1px solid var(--border); color: var(--ink-3); font-size: 12.5px; }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; }
+    .content { padding: 40px 24px 80px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-eyebrow">IPlink Docs</div>
+    <div class="sidebar-title">User guide</div>
+    <nav>
+      <a href="#start">Before you start</a>
+      <div class="group">Investors</div>
+      <a href="#browse">Finding a campaign</a>
+      <a href="#record">Checking a creator</a>
+      <a href="#invest">Investing</a>
+      <a href="#claim">Claiming payouts</a>
+      <a href="#refund">Getting a refund</a>
+      <div class="group">Creators</div>
+      <a href="#raise">Raising capital</a>
+      <a href="#release">Receiving funds</a>
+      <a href="#verify">Verifying revenue</a>
+      <div class="group">Reference</div>
+      <a href="#risks">Risks</a>
+      <a href="#faq">Common questions</a>
+    </nav>
+    <div class="sidebar-foot"><a href="/docs/iplink-technical-integration.html">Technical write-up →</a></div>
+  </aside>
+
+  <main class="content">
+    <div class="content-inner">
+      <h1 class="doc-title">User guide</h1>
+      <p class="doc-sub">How to use IPlink, whether you're raising capital against your revenue or investing in someone who is.</p>
+
+      <section id="start">
+        <h2>Before you start</h2>
+        <p>IPlink runs on public testnets. Tokens have no real value, and nothing here involves real money.</p>
+        <p>You'll need:</p>
+        <ul>
+          <li>A browser wallet — MetaMask, Rabby, or similar</li>
+          <li>Creditcoin testnet CTC for gas and investing (from a testnet faucet)</li>
+          <li>Sepolia ETH if you plan to trigger a revenue payment</li>
+        </ul>
+        <p>Open the app and click <strong>Connect wallet</strong>. IPlink will prompt you to switch networks when an action needs a different chain.</p>
+      </section>
+
+      <section id="browse">
+        <h2>Finding a campaign</h2>
+        <p>The campaigns page lists every live raise. Each card shows the asset, how much has been raised, and the revenue share on offer.</p>
+        <p>Status labels mean:</p>
+        <ul>
+          <li><strong>Raising</strong> — still open for investment</li>
+          <li><strong>Funded</strong> — goal met, no longer accepting investment</li>
+          <li><strong>Revenue verified</strong> — at least one payment has been proven on-chain</li>
+          <li><strong>Completed</strong> — the return cap was reached and rights reverted to the creator</li>
+        </ul>
+      </section>
+
+      <section id="record">
+        <h2>Checking a creator before you invest</h2>
+        <p>On any campaign, click <strong>View attested credit record</strong>. This shows everything that creator has verified across all their campaigns — total raised, number of verified revenue events, and a timeline of each one with its block number.</p>
+        <div class="note">
+          <p>No creator can add an entry to this record themselves. Each row only exists because a real payment was cryptographically proven on-chain. An empty record isn't necessarily bad — it may just be a new creator — but it does mean there's no track record to underwrite yet.</p>
+        </div>
+      </section>
+
+      <section id="invest">
+        <h2>Investing in a campaign</h2>
+        <div class="step"><div class="step-num">1</div><div><h4>Read the terms</h4><p>Check the revenue share percentage, the return cap (the maximum you'll be repaid in total), and when the term ends.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div><h4>Enter an amount</h4><p>The page shows how much is left to fully fund the campaign. Use <strong>Max</strong> to fill exactly that. You can't invest more than the remaining amount.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div><h4>Confirm in your wallet</h4><p>Your share tokens are minted immediately. They represent your proportional claim on verified revenue.</p></div></div>
+        <div class="note">
+          <p>Share tokens can't be transferred or sold. This is deliberate — the payout accounting can't safely support transfers yet. A secondary market is on the roadmap, not in this version.</p>
+        </div>
+      </section>
+
+      <section id="claim">
+        <h2>Claiming your payouts</h2>
+        <p>When revenue is verified, your share is calculated automatically and a payout panel appears on the campaign page showing what you're owed.</p>
+        <p>Click <strong>Claim payout</strong> and confirm. Funds go straight to your wallet.</p>
+        <p>There's no deadline — unclaimed payouts accumulate, so you can claim once after several revenue events rather than each time.</p>
+      </section>
+
+      <section id="refund">
+        <h2>Getting a refund</h2>
+        <p>If a campaign doesn't reach its goal before its funding window closes, you can withdraw your full investment.</p>
+        <p>Return to the campaign page after the funding deadline and click <strong>Withdraw investment</strong>. Your share tokens are burned and your contribution is returned in full.</p>
+      </section>
+
+      <section id="raise">
+        <h2>Raising capital as a creator</h2>
+        <p>A campaign is defined by four things:</p>
+        <ul>
+          <li><strong>Raise amount</strong> — how much capital you want</li>
+          <li><strong>Revenue share</strong> — the percentage of verified revenue that goes to investors</li>
+          <li><strong>Return cap</strong> — the total investors are repaid before rights revert to you</li>
+          <li><strong>Term length</strong> — when the arrangement ends regardless of repayment</li>
+        </ul>
+        <p>You keep ownership of your IP throughout. You're selling a share of revenue for a defined period, not the asset.</p>
+        <div class="note">
+          <p>Campaign creation currently runs through a deployment script rather than the interface. A creation UI is on the roadmap.</p>
+        </div>
+      </section>
+
+      <section id="release">
+        <h2>Receiving your funds</h2>
+        <p>Once the goal is met, <strong>Release capital</strong> appears under Creator actions.</p>
+        <p>You receive 60% of the raise. The remaining 40% stays in the contract as a reserve to cover investor payouts, so investors aren't dependent on you depositing funds later.</p>
+        <p>If verified revenue eventually exceeds what the reserve covers, use <strong>Deposit payout funds</strong> to top it up.</p>
+      </section>
+
+      <section id="verify">
+        <h2>Verifying revenue</h2>
+        <p>Revenue only counts once it's been proven on-chain. The process runs in three steps, visible on the campaign page:</p>
+        <div class="step"><div class="step-num">1</div><div><h4>Payment lands on the source chain</h4><p>A payment is made through the registered payer contract. In this build that's a testnet stand-in for a real distributor.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div><h4>Inclusion proof is generated</h4><p>The Attestcoin Protocol produces cryptographic evidence that the payment was included in a real block. This takes a few minutes while the block is attested.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div><h4>Verified on Creditcoin</h4><p>The proof is checked on-chain. Only then does the campaign credit investors.</p></div></div>
+        <div class="note">
+          <p>Anyone can submit a proof — creator, investor, or a complete stranger. No permission is required, because the proof itself is what's trusted, not whoever submits it.</p>
+        </div>
+      </section>
+
+      <section id="risks">
+        <h2>Risks worth understanding</h2>
+        <div class="warn">
+          <h4>This is unsecured financing</h4>
+          <p>There's no collateral. If a creator stops earning, or takes their capital and never verifies any revenue, investors recover at most the 40% reserve. No smart contract can force someone to earn money.</p>
+        </div>
+        <div class="warn">
+          <h4>Verification proves payment, not legitimacy</h4>
+          <p>A proof confirms a transaction genuinely happened. It can't confirm the money came from real royalties rather than the creator paying themselves. In production this is handled by registering a distributor's actual payout contract during onboarding.</p>
+        </div>
+        <div class="warn">
+          <h4>Share tokens are illiquid</h4>
+          <p>You can't sell your position. Your capital is committed until the return cap is reached or the term ends.</p>
+        </div>
+      </section>
+
+      <section id="faq">
+        <h2>Common questions</h2>
+
+        <p class="faq-q">Is this a loan?</p>
+        <p>No. There's no interest rate and no repayment schedule. Investors are repaid only from revenue that arrives, capped at an agreed multiple.</p>
+
+        <p class="faq-q">Why does the payment happen on a different chain?</p>
+        <p>Because that's the point. Real royalty income doesn't originate on Creditcoin — it comes from the outside world. IPlink's value is proving that outside payment happened, without trusting anyone's word for it.</p>
+
+        <p class="faq-q">Why does verification take a few minutes?</p>
+        <p>The source-chain block has to be attested on Creditcoin before a proof can be generated. That's a periodic cycle, not instant. Once attested, verification itself takes about one block.</p>
+
+        <p class="faq-q">What happens when the return cap is reached?</p>
+        <p>The campaign closes and all future revenue belongs entirely to the creator again.</p>
+
+        <p class="faq-q">Can I invest in my own campaign?</p>
+        <p>No — the contract rejects it, to prevent creators faking traction or routing their own payouts.</p>
+      </section>
+
+      <footer>
+        IPlink — built for BUIDL CTC 2026 Fall. Deployed on public testnets.
+      </footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>

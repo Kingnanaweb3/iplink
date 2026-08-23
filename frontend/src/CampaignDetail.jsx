@@ -97,7 +97,7 @@ export default function CampaignDetail() {
   return (
     <div className="stage">
       <div className="card wide">
-        <Link to="/" className="back-link">&larr; All campaigns</Link>
+        <Link to="/app" className="back-link">&larr; All campaigns</Link>
 
         <AssetHero illustration={meta.illustration} />
 

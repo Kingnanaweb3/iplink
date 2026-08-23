@@ -14,6 +14,7 @@ const COLUMNS = [
     title: "Resources",
     links: [
       { label: "Technical write-up", href: "/docs/iplink-technical-integration.html" },
+      { label: "User guide", href: "/docs/iplink-user-guide.html" },
       { label: "Attestcoin Protocol", href: "https://docs.creditcoin.org/attestcoin-protocol" },
     ],
   },

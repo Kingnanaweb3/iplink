@@ -30,17 +30,39 @@ export default function TriggerVerifyPanel({ campaignAddress, creatorAddress, on
         value: parseEther("0.001"),
         chainId: sepolia.id,
       });
-      const receipt = await sepoliaPublicClient.waitForTransactionReceipt({ hash: payTxHash });
+      const receipt = await sepoliaPublicClient.waitForTransactionReceipt({
+        hash: payTxHash,
+        timeout: 180_000,
+        pollingInterval: 4_000,
+      });
 
       setStepIndex(1);
-      const res = await fetch(RELAY_URL, {
+      const startRes = await fetch(RELAY_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ txHash: payTxHash, blockNumber: receipt.blockNumber.toString() }),
       });
-      const proofResult = await res.json();
-      if (!proofResult.success || !proofResult.data) throw new Error(proofResult.error || "Proof generation failed");
-      const proof = proofResult.data;
+      const startJson = await startRes.json();
+      if (!startJson.success || !startJson.jobId) {
+        throw new Error(startJson.error || "Could not start proof generation");
+      }
+
+      // Attestation can take several minutes, so we poll short requests
+      // instead of holding one long connection open through the proxy.
+      const statusUrl = RELAY_URL.replace("/generate-proof", "/proof-status/");
+      const deadline = Date.now() + 15 * 60 * 1000;
+      let proof = null;
+
+      while (Date.now() < deadline) {
+        await new Promise((r) => setTimeout(r, 5000));
+        const pollRes = await fetch(statusUrl + startJson.jobId);
+        const poll = await pollRes.json();
+
+        if (poll.status === "complete") { proof = poll.data; break; }
+        if (poll.status === "failed") throw new Error(poll.error || "Proof generation failed");
+      }
+
+      if (!proof) throw new Error("Proof generation timed out after 15 minutes");
 
       setStepIndex(2);
       await switchChainAsync({ chainId: creditcoinTestnet.id });
@@ -51,7 +73,11 @@ export default function TriggerVerifyPanel({ campaignAddress, creatorAddress, on
         args: [0, proof.chainKey, proof.headerNumber, proof.txBytes, proof.merkleProof.root, proof.merkleProof.siblings, proof.continuityProof.lowerEndpointDigest, proof.continuityProof.roots],
         chainId: creditcoinTestnet.id,
       });
-      await creditcoinPublicClient.waitForTransactionReceipt({ hash: execTxHash });
+      await creditcoinPublicClient.waitForTransactionReceipt({
+        hash: execTxHash,
+        timeout: 180_000,
+        pollingInterval: 3_000,
+      });
 
       setStepIndex(3);
       onVerified?.();

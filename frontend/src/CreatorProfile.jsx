@@ -62,7 +62,7 @@ export default function CreatorProfile() {
   return (
     <div className="stage">
       <div className="card wide">
-        <Link to="/" className="back-link">&larr; All campaigns</Link>
+        <Link to="/app" className="back-link">&larr; All campaigns</Link>
 
         <div className="profile-head">
           <div className="asset-icon-lg" />
