@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { formatEther, parseEther } from "ethers";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useWriteContract, useSwitchChain } from "wagmi";
 import { getCampaign, getToken, campaignStatus, CAMPAIGN_ABI, getVerifiedRevenueEvents } from "./lib/contracts";
 import { getCampaignMetadata } from "./lib/campaignMetadata";
 import { creditcoinTestnet } from "./lib/wagmi";
@@ -17,6 +17,7 @@ export default function CampaignDetail() {
   const { address } = useParams();
   const { address: connectedAddress, isConnected } = useAccount();
   const { writeContractAsync } = useWriteContract();
+  const { switchChainAsync } = useSwitchChain();
   const meta = getCampaignMetadata(address);
 
   const [data, setData] = useState(null);
@@ -64,6 +65,9 @@ export default function CampaignDetail() {
     setActionSuccess(null);
     setActionPending(true);
     try {
+      // every action on this page targets Creditcoin; the trigger flow
+      // leaves the wallet on Sepolia, so make sure we are back first
+      await switchChainAsync({ chainId: creditcoinTestnet.id });
       await fn();
       await new Promise((r) => setTimeout(r, 3000));
       refresh();
