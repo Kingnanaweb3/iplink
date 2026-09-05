@@ -68,9 +68,13 @@ async function queryLogsChunked(contract, filter, fromBlock, toBlock) {
   }
 }
 
+// Creditcoin produces a block roughly every 15s, so 300k blocks is about
+// 50 days of history - enough to cover a campaign's full lifetime here.
+const LOOKBACK_BLOCKS = 300000;
+
 export async function getVerifiedRevenueEvents(campaign) {
   const provider = getProvider();
   const latest = await provider.getBlockNumber();
-  const fromBlock = latest > 50000 ? latest - 50000 : 0;
+  const fromBlock = latest > LOOKBACK_BLOCKS ? latest - LOOKBACK_BLOCKS : 0;
   return queryLogsChunked(campaign, campaign.filters.RevenueVerified(), fromBlock, latest);
 }

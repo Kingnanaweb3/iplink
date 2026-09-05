@@ -32,7 +32,7 @@ export default function TriggerVerifyPanel({ campaignAddress, creatorAddress, on
       });
       const receipt = await sepoliaPublicClient.waitForTransactionReceipt({
         hash: payTxHash,
-        timeout: 180_000,
+        timeout: 420_000,
         pollingInterval: 4_000,
       });
 
@@ -75,7 +75,7 @@ export default function TriggerVerifyPanel({ campaignAddress, creatorAddress, on
       });
       await creditcoinPublicClient.waitForTransactionReceipt({
         hash: execTxHash,
-        timeout: 180_000,
+        timeout: 420_000,
         pollingInterval: 3_000,
       });
 
