@@ -4,11 +4,11 @@
 
 ## Links
 
-* Live app: https://iplink-cyan.vercel.app
-* Browse campaigns: https://iplink-cyan.vercel.app/app
-* Technical write up: https://iplink-cyan.vercel.app/docs/iplink-technical-integration.html
-* User guide: https://iplink-cyan.vercel.app/docs/iplink-user-guide.html
-* Pitch deck: https://iplink-cyan.vercel.app/docs/iplink-pitch-deck.pdf
+* Live app: https://iplink.online
+* Browse campaigns: https://iplink.online/app
+* Technical write up: https://iplink.online/docs/iplink-technical-integration.html
+* User guide: https://iplink.online/docs/iplink-user-guide.html
+* Pitch deck: https://iplink.online/docs/iplink-pitch-deck.pdf
 * Repository: https://github.com/Kingnanaweb3/iplink
 
 Built for BUIDL CTC 2026 Fall, RWA track.
@@ -179,7 +179,7 @@ A creator can take their sixty percent, never verify any revenue, and walk away.
 
 Separately, restricting who can originate a payment stops outsiders fabricating revenue, but an approved creator could still pay themselves. The real fix is pointing at a distributor's genuine payout contract, established once when the creator is onboarded. That cannot be simulated on a testnet.
 
-Both are documented rather than hidden. Full detail is in the [technical write up](https://iplink-cyan.vercel.app/docs/iplink-technical-integration.html).
+Both are documented rather than hidden. Full detail is in the [technical write up](https://iplink.online/docs/iplink-technical-integration.html).
 
 ## Known limitations
 
